@@ -1,19 +1,25 @@
 "use client";
 
-import SimpleMDE from "react-simplemde-editor";
-import { useForm, Controller } from "react-hook-form";
-import { Button, Callout, Text, TextField } from "@radix-ui/themes";
+import createIssueSchema from "@/app/validationSchemas";
+import dynamic from "next/dynamic";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { AiFillInfoCircle } from "react-icons/ai";
-import { zodResolver } from "@hookform/resolvers/zod";
-import createIssueSchema from "@/app/validationSchemas";
+// import SimpleMDE from "react-simplemde-editor";
 
-import { z } from "zod";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import Spinner from "@/app/components/Spinner";
+import { z } from "zod";
+
+
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
+  ssr: false
+})
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
