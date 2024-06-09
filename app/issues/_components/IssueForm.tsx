@@ -12,7 +12,7 @@ import { AiFillInfoCircle } from "react-icons/ai";
 // import SimpleMDE from "react-simplemde-editor";
 
 import ErrorMessage from "@/app/components/ErrorMessage";
-import Spinner from "@/app/components/Spinner";
+import Spinner from "@/app/_components/Spinner";
 import { Issue } from "@prisma/client";
 import SimpleMDE from 'react-simplemde-editor';
 import { z } from "zod";
