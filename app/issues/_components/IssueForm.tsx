@@ -12,7 +12,7 @@ import { AiFillInfoCircle } from "react-icons/ai";
 // import SimpleMDE from "react-simplemde-editor";
 
 import ErrorMessage from "@/app/components/ErrorMessage";
-import Spinner from "@/app/_components/Spinner";
+import { Spinner } from "@/app/components";
 import { Issue } from "@prisma/client";
 import SimpleMDE from 'react-simplemde-editor';
 import { z } from "zod";
@@ -42,7 +42,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         await axios.patch("/api/issues/" + issue.id, data);
       else 
         await axios.post("/api/issues", data);
-      router.push("/issues");
+      router.push("/issues/list");
       router.refresh();
     } catch (error) {
       setIsSubmitting(false);
