@@ -22,7 +22,7 @@ body {
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .nav-link {
+    @apply text-black hover:text-blue-800 transition-colors
   }
 }
