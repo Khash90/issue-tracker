@@ -5,7 +5,7 @@ import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import delay from "delay";
 import { getServerSession } from "next-auth";
-import authOptions from "@/app/auth/AuthOptions";
+import authOptions from "../../../auth/authOptions";
 
 // interface Props {
 //   params: { params: { id: string } };
