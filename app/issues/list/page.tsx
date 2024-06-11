@@ -4,14 +4,19 @@ import { Table } from "@radix-ui/themes";
 import { IssueStatusBadge } from "@/app/components/index";
 
 import IssueActions from "./IssueActions";
-import { Issue, Status } from "@prisma/client";
+import { Issue, Prisma, Status } from "@prisma/client";
 
 import NextLink from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import Pagination from "@/app/components/Pagination";
 
 interface Props {
-  searchParams: { status: string, orderBy: keyof Issue };
+  searchParams: {
+    status: string;
+    orderBy: keyof Issue;
+    page: string;
+  };
 }
 
 const IssuesPage = async ({ searchParams }: Props) => {
@@ -31,46 +36,60 @@ const IssuesPage = async ({ searchParams }: Props) => {
     : undefined;
 
   // Ensure orderBy is a valid field of Issue
-  const validOrderByFields = columns.map(column => column.value);
+  const validOrderByFields = columns.map((column) => column.value);
   const orderByField = validOrderByFields.includes(searchParams.orderBy)
     ? searchParams.orderBy
     : "createdAt"; // Default to a valid field if undefined
+  
+    const where = { status }
 
+  const page = parseInt(searchParams.page) || 1;
+  const pageSize = 10;
   let issues;
   if (searchParams.status === "all") {
     issues = await prisma.issue.findMany({
       orderBy: {
-        [orderByField]: 'asc'
-      }
+        [orderByField]: "asc",
+      },
     });
   } else {
     issues = await prisma.issue.findMany({
-      where: {
-        status: status, // Ensuring proper type
-      },
+      where,
       orderBy: {
-        [orderByField]: 'asc'
-      }
+        [orderByField]: "asc",
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
   }
 
+  const issueCount = await prisma.issue.count({ where });
+
   return (
     <div>
+
       <IssueActions />
 
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
-            {columns.map(column => 
-            <Table.ColumnHeaderCell key={column.value} className={column.className}>
-              <NextLink href={{
-                query: {...searchParams, orderBy: column.value}
-              }}>
-              {column.label}
-              </NextLink>
-              {column.value === orderByField && <ArrowUpIcon className="inline" /> }
-              </Table.ColumnHeaderCell> )}
-            
+            {columns.map((column) => (
+              <Table.ColumnHeaderCell
+                key={column.value}
+                className={column.className}
+              >
+                <NextLink
+                  href={{
+                    query: { ...searchParams, orderBy: column.value },
+                  }}
+                >
+                  {column.label}
+                </NextLink>
+                {column.value === orderByField && (
+                  <ArrowUpIcon className="inline" />
+                )}
+              </Table.ColumnHeaderCell>
+            ))}
           </Table.Row>
         </Table.Header>
 
@@ -93,6 +112,11 @@ const IssuesPage = async ({ searchParams }: Props) => {
           ))}
         </Table.Body>
       </Table.Root>
+      <Pagination 
+        pageSize={pageSize}
+        currentPage={page}
+        itemCount={issueCount}
+      />
     </div>
   );
 };
