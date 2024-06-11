@@ -5,9 +5,10 @@ import { IssueStatusBadge } from "@/app/components/index";
 
 import IssueActions from "./IssueActions";
 import { Issue, Status } from "@prisma/client";
-import classnames from "classnames";
-import Link from "next/link";
+
+import NextLink from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 interface Props {
   searchParams: { status: string, orderBy: keyof Issue };
@@ -29,14 +30,27 @@ const IssuesPage = async ({ searchParams }: Props) => {
     ? (searchParams.status as Status)
     : undefined;
 
+  // Ensure orderBy is a valid field of Issue
+  const validOrderByFields = columns.map(column => column.value);
+  const orderByField = validOrderByFields.includes(searchParams.orderBy)
+    ? searchParams.orderBy
+    : "createdAt"; // Default to a valid field if undefined
+
   let issues;
   if (searchParams.status === "all") {
-    issues = await prisma.issue.findMany();
+    issues = await prisma.issue.findMany({
+      orderBy: {
+        [orderByField]: 'asc'
+      }
+    });
   } else {
     issues = await prisma.issue.findMany({
       where: {
         status: status, // Ensuring proper type
       },
+      orderBy: {
+        [orderByField]: 'asc'
+      }
     });
   }
 
@@ -48,12 +62,12 @@ const IssuesPage = async ({ searchParams }: Props) => {
         <Table.Header>
           <Table.Row>
             {columns.map(column => <Table.ColumnHeaderCell key={column.value}>
-              <Link href={{
+              <NextLink href={{
                 query: {...searchParams, orderBy: column.value}
               }}>
               {column.label}
-              </Link>
-              {column.value === searchParams.orderBy && <ArrowUpIcon className="inline" /> }
+              </NextLink>
+              {column.value === orderByField && <ArrowUpIcon className="inline" /> }
               </Table.ColumnHeaderCell> )}
             
           </Table.Row>
