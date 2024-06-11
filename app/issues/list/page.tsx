@@ -1,5 +1,5 @@
 import prisma from "@/prisma/client";
-import { Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 
 import { IssueStatusBadge } from "@/app/components/index";
 
@@ -46,7 +46,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
   const page = parseInt(searchParams.page) || 1;
   const pageSize = 10;
   let issues;
-  if (searchParams.status === "all") {
+  if (searchParams.status === "All") {
     issues = await prisma.issue.findMany({
       orderBy: {
         [orderByField]: "asc",
@@ -66,7 +66,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
   const issueCount = await prisma.issue.count({ where });
 
   return (
-    <div>
+    <Flex direction="column" gap="3">
 
       <IssueActions />
 
@@ -117,7 +117,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
         currentPage={page}
         itemCount={issueCount}
       />
-    </div>
+    </Flex>
   );
 };
 
