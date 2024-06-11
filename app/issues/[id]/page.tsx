@@ -8,6 +8,8 @@ import classnames from 'classnames';
 import { getServerSession } from "next-auth";
 import authOptions from "../../auth/authOptions";
 import AssigneSelect from "./AssigneeSelect";
+import { title } from "process";
+import { Description } from "@radix-ui/themes/dist/esm/components/alert-dialog.js";
 
 
 interface Props {
@@ -45,5 +47,16 @@ const IssueDetailPage = async ({ params }: Props) => {
     </Grid>
   );
 };
+
+
+export async function generateMetadata({ params }: Props) {
+ const issue = await prisma.issue.findUnique({ where: { id: parseInt(params.id) } })
+
+ return {
+  title: issue?.title,
+  description: 'Details of issue' + issue?.id
+  
+ }
+}
 
 export default IssueDetailPage;
